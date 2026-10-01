@@ -8,6 +8,74 @@ Dependency Injection configuration for AMQP client connections.
 
 See [docs/roadmap.md](docs/roadmap.md) for planned milestones.
 
+## Configuration
+
+The bundle registers AMQP connection factories. Fetching a factory from the
+container does not open a network connection; the AMQP connection is opened
+only when application code calls `connect()`.
+
+```yaml
+# config/packages/sigbits_amqp.yaml
+sigbits_amqp:
+  default_connection: default
+  connections:
+    default:
+      uri: '%env(AMQP_URL)%'
+      container_id: 'orders-api'
+      timeout: 10.0
+```
+
+Inject the default factory by type:
+
+```php
+<?php
+
+use Sigbits\AmqpBundle\Connection\ConnectionFactoryInterface;
+
+final readonly class OrderPublisher
+{
+    public function __construct(
+        private ConnectionFactoryInterface $connectionFactory,
+    ) {
+    }
+
+    public function publish(string $payload): void
+    {
+        $connection = $this->connectionFactory->connect();
+        $session = $connection->beginSession();
+        $sender = $session->openSender('/queues/orders');
+
+        $sender->send($payload);
+
+        $sender->detach();
+        $session->end();
+        $connection->close();
+    }
+}
+```
+
+Named factories are available through predictable service IDs:
+
+```yaml
+sigbits_amqp:
+  default_connection: default
+  connections:
+    default:
+      uri: '%env(AMQP_URL)%'
+    analytics:
+      uri: '%env(AMQP_ANALYTICS_URL)%'
+      tls:
+        peer_name: 'broker.example.com'
+        cafile: '/etc/ssl/certs/broker-ca.pem'
+      sasl:
+        mechanism: plain
+        username: '%env(AMQP_ANALYTICS_USER)%'
+        password: '%env(AMQP_ANALYTICS_PASSWORD)%'
+```
+
+The service ID for the `analytics` factory is
+`sigbits_amqp.connection_factory.analytics`.
+
 ## Development
 
 Local development commands run inside Docker containers:
