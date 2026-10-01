@@ -13,6 +13,12 @@ reference. Production lifecycle guidance is in
 [docs/releasing.md](docs/releasing.md). Public bundle contracts are documented
 in [docs/public-api.md](docs/public-api.md).
 
+## Scope
+
+This bundle does not provide Symfony Messenger integration yet. It currently
+provides connection configuration, connection factory services, and health-check
+services for `sigbits/php-amqp-client`.
+
 ## Installation
 
 Install the bundle with Composer:

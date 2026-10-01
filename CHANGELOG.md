@@ -4,6 +4,14 @@ All notable changes to `sigbits/php-amqp-client-bundle` are documented here.
 
 The project uses SemVer-style tags with a `v` prefix.
 
+## v0.5.1
+
+Documentation patch.
+
+- Clarified in the README that Symfony Messenger integration is not included
+  yet.
+- Added a Packagist-visible documentation support link in Composer metadata.
+
 ## v0.5.0
 
 Publish-readiness release.
