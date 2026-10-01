@@ -20,8 +20,8 @@ dependency installation, PHP CS Fixer, PHPStan, and PHPUnit.
 Use SemVer-style tags with a `v` prefix:
 
 ```text
-v0.4.0
-v0.4.1
+v0.5.0
+v0.5.1
 v1.0.0
 ```
 
@@ -33,8 +33,8 @@ bundle functionality or documentation milestones before `1.0.0`.
 Create and push the tag from `main`:
 
 ```sh
-git tag v0.4.0
-git push origin v0.4.0
+git tag v0.5.0
+git push origin v0.5.0
 ```
 
 If a tag was created on the wrong commit, do not move it silently after it has
@@ -49,6 +49,8 @@ Create a GitHub release from the tag and include:
 - A short summary of user-visible changes.
 - Compatibility notes when PHP, Symfony, or AMQP client constraints changed.
 - Upgrade notes when service IDs, configuration, or public contracts changed.
+
+Use `.github/RELEASE_TEMPLATE.md` as the release body checklist.
 
 ## Packagist
 
@@ -72,7 +74,7 @@ After publishing, verify the package can be required from a clean Symfony
 application:
 
 ```sh
-composer require sigbits/php-amqp-client-bundle:^0.4
+composer require sigbits/php-amqp-client-bundle:^0.5
 ```
 
 Then add a minimal `config/packages/sigbits_amqp.yaml` and confirm the Symfony

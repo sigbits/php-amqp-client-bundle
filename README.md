@@ -10,7 +10,36 @@ See [docs/roadmap.md](docs/roadmap.md) for planned milestones and
 [docs/configuration.md](docs/configuration.md) for the full configuration
 reference. Production lifecycle guidance is in
 [docs/operations.md](docs/operations.md), and release steps are in
-[docs/releasing.md](docs/releasing.md).
+[docs/releasing.md](docs/releasing.md). Public bundle contracts are documented
+in [docs/public-api.md](docs/public-api.md).
+
+## Installation
+
+Install the bundle with Composer:
+
+```sh
+composer require sigbits/php-amqp-client-bundle:^0.5
+```
+
+If Symfony Flex does not register the bundle automatically, add it manually:
+
+```php
+<?php
+
+return [
+    Sigbits\AmqpBundle\SigbitsAmqpBundle::class => ['all' => true],
+];
+```
+
+Create `config/packages/sigbits_amqp.yaml` and configure at least one
+connection:
+
+```yaml
+sigbits_amqp:
+  connections:
+    default:
+      uri: '%env(AMQP_URL)%'
+```
 
 ## Configuration
 

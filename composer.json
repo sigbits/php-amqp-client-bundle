@@ -1,6 +1,6 @@
 {
     "name": "sigbits/php-amqp-client-bundle",
-    "description": "Symfony bundle for sigbits/php-amqp-client.",
+    "description": "Thin Symfony bundle for configuring sigbits/php-amqp-client connection factories.",
     "type": "symfony-bundle",
     "license": "MIT",
     "keywords": [
@@ -14,6 +14,11 @@
     "support": {
         "issues": "https://github.com/sigbits/php-amqp-client-bundle/issues",
         "source": "https://github.com/sigbits/php-amqp-client-bundle"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "0.5-dev"
+        }
     },
     "require": {
         "php": "^8.3",

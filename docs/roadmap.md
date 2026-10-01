@@ -18,6 +18,8 @@ though the package-level PHP floor remains 8.3.
 
 ## 0.1.0 Package Foundation
 
+Status: complete. This milestone was included before public publishing.
+
 Goal: publish a valid Symfony bundle package skeleton with the same engineering
 baseline as `sigbits/php-amqp-client`.
 
@@ -41,6 +43,9 @@ Exit criteria:
 
 ## 0.2.0 Thin DI/Config Bundle
 
+Status: complete. Tagged as `v0.2.0`; Symfony 6.4 compatibility follow-up was
+tagged as `v0.2.1`.
+
 Goal: let applications declare named AMQP client connections in Symfony config
 and consume them as services.
 
@@ -61,6 +66,8 @@ Exit criteria:
 
 ## 0.3.0 Developer Ergonomics
 
+Status: complete. Tagged as `v0.3.0`.
+
 Goal: make the bundle easy to adopt and debug in Symfony applications.
 
 - Expand README and usage documentation.
@@ -75,6 +82,8 @@ Exit criteria:
 - Invalid configuration failures point to the exact option that needs changing.
 
 ## 0.4.0 Operational Readiness
+
+Status: complete. Tagged as `v0.4.0`.
 
 Goal: document and support production-oriented usage without broadening the
 bundle into a worker framework.
@@ -91,6 +100,25 @@ Exit criteria:
 - Operations guidance covers common deployment and worker lifecycle questions.
 - Release documentation is sufficient to tag and publish a new version
   repeatably.
+
+## 0.5.0 Publish Readiness
+
+Goal: prepare the first public Packagist-oriented release without expanding the
+runtime feature set.
+
+- Add installation guidance for Composer and Symfony bundle registration.
+- Add a changelog covering the pre-public release line.
+- Document public bundle contracts and service IDs.
+- Add GitHub release notes scaffolding.
+- Polish Composer metadata for Packagist.
+- Mark completed roadmap milestones.
+
+Exit criteria:
+
+- README explains how to install and configure the bundle from scratch.
+- Public API documentation identifies the contracts applications may rely on.
+- Release notes and changelog are ready for a public GitHub release.
+- `make ci` succeeds before tagging.
 
 ## Later: Messenger Integration
 
