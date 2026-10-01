@@ -58,7 +58,7 @@ jobs:
         run: composer config platform.php "${{ matrix.php-platform-version }}"
 
       - name: Select Symfony version
-        run: composer require --no-update "symfony/config:^${{ matrix.symfony-version }}" "symfony/dependency-injection:^${{ matrix.symfony-version }}" "symfony/http-kernel:^${{ matrix.symfony-version }}"
+        run: composer require --no-update "symfony/config:${{ matrix.symfony-version }}.*" "symfony/dependency-injection:${{ matrix.symfony-version }}.*" "symfony/http-kernel:${{ matrix.symfony-version }}.*"
 
       - name: Install dependencies
         run: composer update --prefer-dist --no-interaction --no-progress
