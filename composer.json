@@ -12,6 +12,7 @@
     ],
     "homepage": "https://github.com/sigbits/php-amqp-client-bundle",
     "support": {
+        "docs": "https://github.com/sigbits/php-amqp-client-bundle/tree/main/docs",
         "issues": "https://github.com/sigbits/php-amqp-client-bundle/issues",
         "source": "https://github.com/sigbits/php-amqp-client-bundle"
     },
