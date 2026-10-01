@@ -1,0 +1,59 @@
+{
+    "name": "sigbits/php-amqp-client-bundle",
+    "description": "Symfony bundle for sigbits/php-amqp-client.",
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "keywords": [
+        "amqp",
+        "amqp-1.0",
+        "messaging",
+        "symfony",
+        "symfony-bundle"
+    ],
+    "homepage": "https://github.com/sigbits/php-amqp-client-bundle",
+    "support": {
+        "issues": "https://github.com/sigbits/php-amqp-client-bundle/issues",
+        "source": "https://github.com/sigbits/php-amqp-client-bundle"
+    },
+    "require": {
+        "php": "^8.3",
+        "sigbits/php-amqp-client": "^1.0",
+        "symfony/config": "^6.4 || ^7.4 || ^8.1",
+        "symfony/dependency-injection": "^6.4 || ^7.4 || ^8.1",
+        "symfony/http-kernel": "^6.4 || ^7.4 || ^8.1"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.64",
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^11.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Sigbits\\AmqpBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Sigbits\\AmqpBundle\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit --configuration phpunit.xml.dist",
+        "cs": "php-cs-fixer fix --dry-run --diff --config=.php-cs-fixer.dist.php",
+        "cs:fix": "php-cs-fixer fix --config=.php-cs-fixer.dist.php",
+        "stan": "phpstan analyse --configuration=phpstan.neon.dist",
+        "ci": [
+            "@cs",
+            "@stan",
+            "@test"
+        ]
+    },
+    "config": {
+        "platform": {
+            "php": "8.3.0"
+        },
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

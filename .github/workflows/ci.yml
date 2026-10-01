@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  quality:
+    name: PHP ${{ matrix.php-version }} / Symfony ${{ matrix.symfony-version }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php-version: '8.3'
+            symfony-version: '6.4'
+          - php-version: '8.3'
+            symfony-version: '7.4'
+          - php-version: '8.4'
+            symfony-version: '6.4'
+          - php-version: '8.4'
+            symfony-version: '7.4'
+          - php-version: '8.4'
+            symfony-version: '8.1'
+          - php-version: '8.5'
+            symfony-version: '6.4'
+          - php-version: '8.5'
+            symfony-version: '7.4'
+          - php-version: '8.5'
+            symfony-version: '8.1'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          coverage: none
+          tools: composer:v2
+
+      - name: Validate Composer metadata
+        run: composer validate --strict --no-check-lock
+
+      - name: Select PHP platform
+        run: composer config platform.php "${{ matrix.php-version }}.0"
+
+      - name: Select Symfony version
+        run: composer require --no-update "symfony/config:^${{ matrix.symfony-version }}" "symfony/dependency-injection:^${{ matrix.symfony-version }}" "symfony/http-kernel:^${{ matrix.symfony-version }}"
+
+      - name: Install dependencies
+        run: composer update --prefer-dist --no-interaction --no-progress
+
+      - name: Check coding standards
+        run: composer cs
+
+      - name: Run static analysis
+        run: composer stan
+
+      - name: Run tests
+        run: composer test
