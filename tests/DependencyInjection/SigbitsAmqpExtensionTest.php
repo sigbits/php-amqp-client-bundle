@@ -7,6 +7,7 @@ namespace Sigbits\AmqpBundle\Tests\DependencyInjection;
 use PHPUnit\Framework\TestCase;
 use Sigbits\AmqpBundle\Connection\ConnectionFactoryInterface;
 use Sigbits\AmqpBundle\DependencyInjection\SigbitsAmqpExtension;
+use Sigbits\AmqpBundle\Health\ConnectionHealthCheckerInterface;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -64,6 +65,50 @@ final class SigbitsAmqpExtensionTest extends TestCase
         self::assertSame(
             $container->get('sigbits_amqp.connection_factory.analytics'),
             $container->get(ConnectionFactoryInterface::class),
+        );
+    }
+
+    public function testRegistersDefaultConnectionHealthCheckerAlias(): void
+    {
+        $container = $this->loadContainer([
+            'connections' => [
+                'default' => [
+                    'uri' => 'amqp://guest:guest@localhost:5672',
+                ],
+            ],
+        ]);
+
+        self::assertTrue($container->has('sigbits_amqp.connection_health_checker.default'));
+        self::assertTrue($container->has(ConnectionHealthCheckerInterface::class));
+        self::assertInstanceOf(
+            ConnectionHealthCheckerInterface::class,
+            $container->get('sigbits_amqp.connection_health_checker.default'),
+        );
+        self::assertSame(
+            $container->get('sigbits_amqp.connection_health_checker.default'),
+            $container->get(ConnectionHealthCheckerInterface::class),
+        );
+    }
+
+    public function testRegistersNamedConnectionHealthCheckersAndDefaultAlias(): void
+    {
+        $container = $this->loadContainer([
+            'default_connection' => 'analytics',
+            'connections' => [
+                'default' => [
+                    'uri' => 'amqp://guest:guest@localhost:5672',
+                ],
+                'analytics' => [
+                    'uri' => 'amqps://analytics:secret@broker.example.com',
+                ],
+            ],
+        ]);
+
+        self::assertTrue($container->has('sigbits_amqp.connection_health_checker.default'));
+        self::assertTrue($container->has('sigbits_amqp.connection_health_checker.analytics'));
+        self::assertSame(
+            $container->get('sigbits_amqp.connection_health_checker.analytics'),
+            $container->get(ConnectionHealthCheckerInterface::class),
         );
     }
 

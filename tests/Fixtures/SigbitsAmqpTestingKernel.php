@@ -34,6 +34,11 @@ final class SigbitsAmqpTestingKernel extends Kernel
                 ->register(DefaultConnectionFactoryConsumer::class)
                 ->setAutowired(true)
                 ->setPublic(true);
+
+            $container
+                ->register(DefaultConnectionHealthCheckerConsumer::class)
+                ->setAutowired(true)
+                ->setPublic(true);
         });
     }
 

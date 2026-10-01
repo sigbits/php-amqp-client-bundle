@@ -6,7 +6,9 @@ namespace Sigbits\AmqpBundle\Tests\Functional;
 
 use PHPUnit\Framework\TestCase;
 use Sigbits\AmqpBundle\Connection\ConnectionFactory;
+use Sigbits\AmqpBundle\Health\ConnectionHealthCheckerInterface;
 use Sigbits\AmqpBundle\Tests\Fixtures\DefaultConnectionFactoryConsumer;
+use Sigbits\AmqpBundle\Tests\Fixtures\DefaultConnectionHealthCheckerConsumer;
 use Sigbits\AmqpBundle\Tests\Fixtures\SigbitsAmqpTestingKernel;
 
 final class BundleKernelTest extends TestCase
@@ -56,6 +58,36 @@ final class BundleKernelTest extends TestCase
             self::assertSame(
                 $container->get('sigbits_amqp.connection_factory.default'),
                 $consumer->connectionFactory(),
+            );
+        } finally {
+            $kernel->shutdown();
+        }
+    }
+
+    public function testBundleAutowiresDefaultConnectionHealthCheckerInSymfonyKernel(): void
+    {
+        $kernel = new SigbitsAmqpTestingKernel([
+            'connections' => [
+                'default' => [
+                    'uri' => 'amqp://guest:guest@localhost:5672',
+                ],
+            ],
+        ]);
+
+        $kernel->boot();
+
+        try {
+            $container = $kernel->getContainer();
+            $consumer = $container->get(DefaultConnectionHealthCheckerConsumer::class);
+
+            self::assertInstanceOf(DefaultConnectionHealthCheckerConsumer::class, $consumer);
+            self::assertInstanceOf(
+                ConnectionHealthCheckerInterface::class,
+                $consumer->connectionHealthChecker(),
+            );
+            self::assertSame(
+                $container->get('sigbits_amqp.connection_health_checker.default'),
+                $consumer->connectionHealthChecker(),
             );
         } finally {
             $kernel->shutdown();

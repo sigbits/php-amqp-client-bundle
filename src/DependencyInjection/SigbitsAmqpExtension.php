@@ -6,10 +6,13 @@ namespace Sigbits\AmqpBundle\DependencyInjection;
 
 use Sigbits\AmqpBundle\Connection\ConnectionFactory;
 use Sigbits\AmqpBundle\Connection\ConnectionFactoryInterface;
+use Sigbits\AmqpBundle\Health\ConnectionHealthChecker;
+use Sigbits\AmqpBundle\Health\ConnectionHealthCheckerInterface;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\Extension;
+use Symfony\Component\DependencyInjection\Reference;
 
 final class SigbitsAmqpExtension extends Extension
 {
@@ -33,15 +36,23 @@ final class SigbitsAmqpExtension extends Extension
 
         foreach ($connections as $name => $connectionConfig) {
             $this->registerConnectionFactory($container, $name, $connectionConfig);
+            $this->registerConnectionHealthChecker($container, $name);
         }
 
         $defaultServiceId = $this->connectionFactoryServiceId($defaultConnection);
+        $defaultHealthCheckerServiceId = $this->connectionHealthCheckerServiceId($defaultConnection);
 
         $container
             ->setAlias(ConnectionFactoryInterface::class, $defaultServiceId)
             ->setPublic(true);
         $container
             ->setAlias('sigbits_amqp.connection_factory', $defaultServiceId)
+            ->setPublic(true);
+        $container
+            ->setAlias(ConnectionHealthCheckerInterface::class, $defaultHealthCheckerServiceId)
+            ->setPublic(true);
+        $container
+            ->setAlias('sigbits_amqp.connection_health_checker', $defaultHealthCheckerServiceId)
             ->setPublic(true);
     }
 
@@ -90,8 +101,24 @@ final class SigbitsAmqpExtension extends Extension
         $container->setDefinition($this->connectionFactoryServiceId($name), $definition);
     }
 
+    private function registerConnectionHealthChecker(ContainerBuilder $container, string $name): void
+    {
+        $definition = new Definition(ConnectionHealthChecker::class);
+        $definition->setArguments([
+            new Reference($this->connectionFactoryServiceId($name)),
+        ]);
+        $definition->setPublic(true);
+
+        $container->setDefinition($this->connectionHealthCheckerServiceId($name), $definition);
+    }
+
     private function connectionFactoryServiceId(string $name): string
     {
         return sprintf('sigbits_amqp.connection_factory.%s', $name);
+    }
+
+    private function connectionHealthCheckerServiceId(string $name): string
+    {
+        return sprintf('sigbits_amqp.connection_health_checker.%s', $name);
     }
 }

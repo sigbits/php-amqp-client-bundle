@@ -178,6 +178,28 @@ For the `analytics` connection above, the service ID is:
 sigbits_amqp.connection_factory.analytics
 ```
 
+## Health-Check Services
+
+The bundle registers health-check services for configured connections. These
+services are lazy: a broker connection is opened only when `check()` is called.
+
+The default health checker is available through these aliases:
+
+- `Sigbits\AmqpBundle\Health\ConnectionHealthCheckerInterface`
+- `sigbits_amqp.connection_health_checker`
+
+Named health checkers use this service ID pattern:
+
+```text
+sigbits_amqp.connection_health_checker.<name>
+```
+
+For the `analytics` connection above, the service ID is:
+
+```text
+sigbits_amqp.connection_health_checker.analytics
+```
+
 ## Environment Variables
 
 The bundle accepts Symfony environment placeholders in any string option:

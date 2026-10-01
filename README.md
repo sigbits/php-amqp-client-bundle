@@ -8,7 +8,9 @@ factories.
 
 See [docs/roadmap.md](docs/roadmap.md) for planned milestones and
 [docs/configuration.md](docs/configuration.md) for the full configuration
-reference.
+reference. Production lifecycle guidance is in
+[docs/operations.md](docs/operations.md), and release steps are in
+[docs/releasing.md](docs/releasing.md).
 
 ## Configuration
 
