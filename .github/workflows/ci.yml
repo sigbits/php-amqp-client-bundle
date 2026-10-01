@@ -16,20 +16,28 @@ jobs:
       matrix:
         include:
           - php-version: '8.3'
+            php-platform-version: '8.3.0'
             symfony-version: '6.4'
           - php-version: '8.3'
+            php-platform-version: '8.3.0'
             symfony-version: '7.4'
           - php-version: '8.4'
+            php-platform-version: '8.4.1'
             symfony-version: '6.4'
           - php-version: '8.4'
+            php-platform-version: '8.4.1'
             symfony-version: '7.4'
           - php-version: '8.4'
+            php-platform-version: '8.4.1'
             symfony-version: '8.1'
           - php-version: '8.5'
+            php-platform-version: '8.5.0'
             symfony-version: '6.4'
           - php-version: '8.5'
+            php-platform-version: '8.5.0'
             symfony-version: '7.4'
           - php-version: '8.5'
+            php-platform-version: '8.5.0'
             symfony-version: '8.1'
 
     steps:
@@ -47,7 +55,7 @@ jobs:
         run: composer validate --strict --no-check-lock
 
       - name: Select PHP platform
-        run: composer config platform.php "${{ matrix.php-version }}.0"
+        run: composer config platform.php "${{ matrix.php-platform-version }}"
 
       - name: Select Symfony version
         run: composer require --no-update "symfony/config:^${{ matrix.symfony-version }}" "symfony/dependency-injection:^${{ matrix.symfony-version }}" "symfony/http-kernel:^${{ matrix.symfony-version }}"
