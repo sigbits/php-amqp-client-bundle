@@ -73,6 +73,74 @@ final class Configuration implements ConfigurationInterface
         $saslChildren->scalarNode('password')->defaultValue('');
         $saslChildren->scalarNode('authorization_id')->defaultValue('');
 
+        $sendersNode = $rootChildren
+            ->arrayNode('senders')
+            ->defaultValue([])
+            ->useAttributeAsKey('name');
+        $senderPrototype = $sendersNode->arrayPrototype();
+        $senderChildren = $senderPrototype->children();
+        $senderChildren
+            ->scalarNode('connection')
+            ->defaultValue('default')
+            ->cannotBeEmpty();
+        $senderChildren
+            ->scalarNode('address')
+            ->isRequired()
+            ->cannotBeEmpty();
+        $senderChildren
+            ->scalarNode('link_name')
+            ->defaultValue('sender')
+            ->cannotBeEmpty();
+        $senderChildren
+            ->integerNode('handle')
+            ->defaultValue(0)
+            ->validate()
+                ->ifTrue(static fn (int $value): bool => $value < 0)
+                ->thenInvalid('The sender handle must be greater than or equal to 0.');
+        $senderChildren
+            ->integerNode('max_frame_size')
+            ->defaultValue(512)
+            ->validate()
+                ->ifTrue(static fn (int $value): bool => $value <= 0)
+                ->thenInvalid('The sender max_frame_size must be greater than 0.');
+
+        $receiversNode = $rootChildren
+            ->arrayNode('receivers')
+            ->defaultValue([])
+            ->useAttributeAsKey('name');
+        $receiverPrototype = $receiversNode->arrayPrototype();
+        $receiverChildren = $receiverPrototype->children();
+        $receiverChildren
+            ->scalarNode('connection')
+            ->defaultValue('default')
+            ->cannotBeEmpty();
+        $receiverChildren
+            ->scalarNode('address')
+            ->isRequired()
+            ->cannotBeEmpty();
+        $receiverChildren
+            ->scalarNode('link_name')
+            ->defaultValue('receiver')
+            ->cannotBeEmpty();
+        $receiverChildren
+            ->integerNode('handle')
+            ->defaultValue(1)
+            ->validate()
+                ->ifTrue(static fn (int $value): bool => $value < 0)
+                ->thenInvalid('The receiver handle must be greater than or equal to 0.');
+        $receiverChildren
+            ->integerNode('credit')
+            ->defaultValue(1)
+            ->validate()
+                ->ifTrue(static fn (int $value): bool => $value < 0)
+                ->thenInvalid('The receiver credit must be greater than or equal to 0.');
+        $receiverChildren
+            ->integerNode('receive_timeout')
+            ->defaultValue(1000)
+            ->validate()
+                ->ifTrue(static fn (int $value): bool => $value < 0)
+                ->thenInvalid('The receiver receive_timeout must be greater than or equal to 0.');
+
         return $treeBuilder;
     }
 

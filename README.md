@@ -4,7 +4,8 @@ Symfony bundle for [`sigbits/php-amqp-client`](https://github.com/sigbits/php-am
 
 This project is in early development. It currently provides a thin
 Dependency Injection and configuration layer for AMQP client connection
-factories.
+factories, endpoint services, and PHP helpers for the client message and
+protocol value objects.
 
 See [docs/roadmap.md](docs/roadmap.md) for planned milestones and
 [docs/configuration.md](docs/configuration.md) for the full configuration
@@ -15,9 +16,10 @@ in [docs/public-api.md](docs/public-api.md).
 
 ## Scope
 
-This bundle does not provide Symfony Messenger integration yet. It currently
-provides connection configuration, connection factory services, and health-check
-services for `sigbits/php-amqp-client`.
+This bundle does not require Symfony Messenger. It currently provides
+connection configuration, connection factory services, endpoint services,
+health-check services, and PHP helper factories for `sigbits/php-amqp-client`.
+Future Messenger integration is expected to remain optional.
 
 ## Installation
 
@@ -116,7 +118,7 @@ The service ID for the `analytics` factory is
 `sigbits_amqp.connection_factory.analytics`.
 
 For all options, defaults, TLS/SASL examples, environment-variable examples,
-and invalid configuration messages, see
+endpoint examples, helper services, and invalid configuration messages, see
 [docs/configuration.md](docs/configuration.md).
 
 ## Development

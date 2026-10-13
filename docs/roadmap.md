@@ -11,7 +11,7 @@ the PHP requirements of `sigbits/php-amqp-client`.
 
 - PHP: `^8.3`
 - Symfony: `^6.4 || ^7.4 || ^8.1`
-- AMQP client: `sigbits/php-amqp-client` `^1.0`
+- AMQP client: `sigbits/php-amqp-client` `^1.3`
 
 Symfony 8.1 requires PHP 8.4.1 or newer, so its CI jobs run on PHP 8.4+ even
 though the package-level PHP floor remains 8.3.
@@ -103,6 +103,9 @@ Exit criteria:
 
 ## 0.5.0 Publish Readiness
 
+Status: complete. Tagged as `v0.5.0`; documentation patch follow-up was tagged
+as `v0.5.1`.
+
 Goal: prepare the first public Packagist-oriented release without expanding the
 runtime feature set.
 
@@ -120,12 +123,40 @@ Exit criteria:
 - Release notes and changelog are ready for a public GitHub release.
 - `make ci` succeeds before tagging.
 
-## Later: Messenger Integration
+## 0.6.0 Client 1.3 Convenience Services
 
-Messenger integration is intentionally out of scope for the first release line.
-When added, it should reuse the same connection configuration and factory
-contracts from the thin bundle instead of introducing a parallel configuration
-model.
+Status: planned.
+
+Goal: support `sigbits/php-amqp-client` 1.3 as the bundle baseline and add
+Symfony-native convenience services for reusable AMQP endpoints without making
+Messenger a required dependency.
+
+- Require `sigbits/php-amqp-client` `^1.3`.
+- Add named sender and receiver endpoint configuration on top of the existing
+  connection model.
+- Add PHP factories/builders for message creation, link/session opening, and
+  settlement helper workflows.
+- Support client 1.3 message values, terminus options, and delivery-state
+  objects through PHP APIs rather than broad protocol-shaped YAML trees.
+- Keep Messenger integration optional and outside the core runtime dependency
+  set.
+
+Exit criteria:
+
+- `composer validate --strict --no-check-lock` succeeds with the `^1.3` client
+  constraint.
+- `composer ci` succeeds against `sigbits/php-amqp-client` `v1.3.0`.
+- Documentation covers the new endpoint services and confirms Messenger remains
+  optional.
+- Public API documentation identifies the new supported service contracts.
+
+## Later: Optional Messenger Integration
+
+Messenger integration is intentionally optional. When added, it should reuse the
+same connection and endpoint configuration contracts from the core bundle
+instead of introducing a parallel connection model, and it should activate only
+when `symfony/messenger` is installed and Messenger transport configuration is
+present.
 
 Likely scope:
 

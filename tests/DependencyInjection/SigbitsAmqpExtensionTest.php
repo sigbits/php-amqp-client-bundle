@@ -8,6 +8,10 @@ use PHPUnit\Framework\TestCase;
 use Sigbits\AmqpBundle\Connection\ConnectionFactoryInterface;
 use Sigbits\AmqpBundle\DependencyInjection\SigbitsAmqpExtension;
 use Sigbits\AmqpBundle\Health\ConnectionHealthCheckerInterface;
+use Sigbits\AmqpBundle\Message\MessageFactoryInterface;
+use Sigbits\AmqpBundle\Protocol\AmqpTypeFactoryInterface;
+use Sigbits\AmqpBundle\Protocol\TerminusFactoryInterface;
+use Sigbits\AmqpBundle\Settlement\SettlementHelperInterface;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -90,6 +94,22 @@ final class SigbitsAmqpExtensionTest extends TestCase
         );
     }
 
+    public function testRegistersClient13FactoryAliases(): void
+    {
+        $container = $this->loadContainer([
+            'connections' => [
+                'default' => [
+                    'uri' => 'amqp://guest:guest@localhost:5672',
+                ],
+            ],
+        ]);
+
+        self::assertInstanceOf(MessageFactoryInterface::class, $container->get(MessageFactoryInterface::class));
+        self::assertInstanceOf(AmqpTypeFactoryInterface::class, $container->get(AmqpTypeFactoryInterface::class));
+        self::assertInstanceOf(TerminusFactoryInterface::class, $container->get(TerminusFactoryInterface::class));
+        self::assertInstanceOf(SettlementHelperInterface::class, $container->get(SettlementHelperInterface::class));
+    }
+
     public function testRegistersNamedConnectionHealthCheckersAndDefaultAlias(): void
     {
         $container = $this->loadContainer([
@@ -137,6 +157,27 @@ final class SigbitsAmqpExtensionTest extends TestCase
                 'default' => [
                     'uri' => 'amqp://guest:guest@localhost:5672',
                     'timeout' => 0,
+                ],
+            ],
+        ]);
+    }
+
+    public function testRejectsSenderEndpointReferencingUnknownConnection(): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('sender endpoint');
+        $this->expectExceptionMessage('missing');
+
+        $this->loadContainer([
+            'connections' => [
+                'default' => [
+                    'uri' => 'amqp://guest:guest@localhost:5672',
+                ],
+            ],
+            'senders' => [
+                'orders' => [
+                    'connection' => 'missing',
+                    'address' => '/queues/orders',
                 ],
             ],
         ]);

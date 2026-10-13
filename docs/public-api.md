@@ -22,6 +22,8 @@ The root keys are:
 
 - `default_connection`
 - `connections`
+- `senders`
+- `receivers`
 
 Connection definitions support:
 
@@ -30,6 +32,23 @@ Connection definitions support:
 - `timeout`
 - `tls`
 - `sasl`
+
+Sender endpoint definitions support:
+
+- `connection`
+- `address`
+- `link_name`
+- `handle`
+- `max_frame_size`
+
+Receiver endpoint definitions support:
+
+- `connection`
+- `address`
+- `link_name`
+- `handle`
+- `credit`
+- `receive_timeout`
 
 ## Connection Factories
 
@@ -95,6 +114,85 @@ sigbits_amqp.connection_health_checker.<name>
 Calling `check()` opens an AMQP connection. A successful check closes that
 connection before returning.
 
+## Endpoint Services
+
+Sender endpoints implement:
+
+```php
+<?php
+
+namespace Sigbits\AmqpBundle\Endpoint;
+
+interface SenderEndpointInterface
+{
+    public function open(): OpenSenderEndpoint;
+
+    public function connect(): OpenSenderEndpoint;
+}
+```
+
+Named sender endpoints use this service ID pattern:
+
+```text
+sigbits_amqp.sender_endpoint.<name>
+```
+
+Receiver endpoints implement:
+
+```php
+<?php
+
+namespace Sigbits\AmqpBundle\Endpoint;
+
+interface ReceiverEndpointInterface
+{
+    public function open(): OpenReceiverEndpoint;
+
+    public function connect(): OpenReceiverEndpoint;
+}
+```
+
+Named receiver endpoints use this service ID pattern:
+
+```text
+sigbits_amqp.receiver_endpoint.<name>
+```
+
+Opening or connecting an endpoint opens a connection, begins a session, and
+opens the AMQP link. `connect()` is an alias for `open()`. Applications are
+responsible for calling `close()` on the returned open endpoint object when the
+unit of work is finished.
+
+## Client 1.3 Helper Services
+
+The default AMQP message factory is available as:
+
+```text
+Sigbits\AmqpBundle\Message\MessageFactoryInterface
+sigbits_amqp.message_factory
+```
+
+The AMQP generic type factory is available as:
+
+```text
+Sigbits\AmqpBundle\Protocol\AmqpTypeFactoryInterface
+sigbits_amqp.amqp_type_factory
+```
+
+The AMQP terminus and delivery-state value factory is available as:
+
+```text
+Sigbits\AmqpBundle\Protocol\TerminusFactoryInterface
+sigbits_amqp.terminus_factory
+```
+
+The settlement helper is available as:
+
+```text
+Sigbits\AmqpBundle\Settlement\SettlementHelperInterface
+sigbits_amqp.settlement_helper
+```
+
 ## Result Objects
 
 `ConnectionHealthCheckResult` exposes:
@@ -111,6 +209,7 @@ These are implementation details and may change between pre-1.0 minor releases:
 
 - Concrete service classes.
 - Constructor signatures of concrete service classes.
+- Open endpoint value-object constructor signatures.
 - Test fixtures.
 - Private methods.
 - Container definition internals.
@@ -120,6 +219,7 @@ IDs listed in this document.
 
 ## Messenger
 
-Messenger integration is not part of this public API yet. Future Messenger
-support should reuse the connection configuration and factory contracts
-documented here.
+Messenger integration is optional and is not part of this public API yet.
+Future Messenger support should activate only when `symfony/messenger` is
+installed and explicit Messenger transport configuration is present. It should
+reuse the connection and endpoint contracts documented here.

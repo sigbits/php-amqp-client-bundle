@@ -6,8 +6,18 @@ namespace Sigbits\AmqpBundle\DependencyInjection;
 
 use Sigbits\AmqpBundle\Connection\ConnectionFactory;
 use Sigbits\AmqpBundle\Connection\ConnectionFactoryInterface;
+use Sigbits\AmqpBundle\Endpoint\ReceiverEndpoint;
+use Sigbits\AmqpBundle\Endpoint\SenderEndpoint;
 use Sigbits\AmqpBundle\Health\ConnectionHealthChecker;
 use Sigbits\AmqpBundle\Health\ConnectionHealthCheckerInterface;
+use Sigbits\AmqpBundle\Message\MessageFactory;
+use Sigbits\AmqpBundle\Message\MessageFactoryInterface;
+use Sigbits\AmqpBundle\Protocol\AmqpTypeFactory;
+use Sigbits\AmqpBundle\Protocol\AmqpTypeFactoryInterface;
+use Sigbits\AmqpBundle\Protocol\TerminusFactory;
+use Sigbits\AmqpBundle\Protocol\TerminusFactoryInterface;
+use Sigbits\AmqpBundle\Settlement\SettlementHelper;
+use Sigbits\AmqpBundle\Settlement\SettlementHelperInterface;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -39,6 +49,16 @@ final class SigbitsAmqpExtension extends Extension
             $this->registerConnectionHealthChecker($container, $name);
         }
 
+        foreach ($config['senders'] as $name => $senderConfig) {
+            $this->registerSenderEndpoint($container, $name, $senderConfig, $connections);
+        }
+
+        foreach ($config['receivers'] as $name => $receiverConfig) {
+            $this->registerReceiverEndpoint($container, $name, $receiverConfig, $connections);
+        }
+
+        $this->registerClient13Factories($container);
+
         $defaultServiceId = $this->connectionFactoryServiceId($defaultConnection);
         $defaultHealthCheckerServiceId = $this->connectionHealthCheckerServiceId($defaultConnection);
 
@@ -54,6 +74,91 @@ final class SigbitsAmqpExtension extends Extension
         $container
             ->setAlias('sigbits_amqp.connection_health_checker', $defaultHealthCheckerServiceId)
             ->setPublic(true);
+    }
+
+    /**
+     * @param array{
+     *     connection: string,
+     *     address: string,
+     *     link_name: string,
+     *     handle: int,
+     *     max_frame_size: int
+     * } $senderConfig
+     * @param array<string, mixed> $connections
+     */
+    private function registerSenderEndpoint(
+        ContainerBuilder $container,
+        string $name,
+        array $senderConfig,
+        array $connections,
+    ): void {
+        $this->assertServiceName($name, 'sender endpoint');
+        $this->assertConfiguredConnection($senderConfig['connection'], $connections, 'sender endpoint', $name);
+
+        $definition = new Definition(SenderEndpoint::class);
+        $definition->setArguments([
+            new Reference($this->connectionFactoryServiceId($senderConfig['connection'])),
+            $senderConfig['address'],
+            $senderConfig['link_name'],
+            $senderConfig['handle'],
+            $senderConfig['max_frame_size'],
+        ]);
+        $definition->setPublic(true);
+
+        $container->setDefinition($this->senderEndpointServiceId($name), $definition);
+    }
+
+    /**
+     * @param array{
+     *     connection: string,
+     *     address: string,
+     *     link_name: string,
+     *     handle: int,
+     *     credit: int,
+     *     receive_timeout: int
+     * } $receiverConfig
+     * @param array<string, mixed> $connections
+     */
+    private function registerReceiverEndpoint(
+        ContainerBuilder $container,
+        string $name,
+        array $receiverConfig,
+        array $connections,
+    ): void {
+        $this->assertServiceName($name, 'receiver endpoint');
+        $this->assertConfiguredConnection($receiverConfig['connection'], $connections, 'receiver endpoint', $name);
+
+        $definition = new Definition(ReceiverEndpoint::class);
+        $definition->setArguments([
+            new Reference($this->connectionFactoryServiceId($receiverConfig['connection'])),
+            $receiverConfig['address'],
+            $receiverConfig['link_name'],
+            $receiverConfig['handle'],
+            $receiverConfig['credit'],
+            $receiverConfig['receive_timeout'],
+        ]);
+        $definition->setPublic(true);
+
+        $container->setDefinition($this->receiverEndpointServiceId($name), $definition);
+    }
+
+    private function registerClient13Factories(ContainerBuilder $container): void
+    {
+        $container->setDefinition(MessageFactory::class, (new Definition(MessageFactory::class))->setPublic(true));
+        $container->setAlias(MessageFactoryInterface::class, MessageFactory::class)->setPublic(true);
+        $container->setAlias('sigbits_amqp.message_factory', MessageFactory::class)->setPublic(true);
+
+        $container->setDefinition(AmqpTypeFactory::class, (new Definition(AmqpTypeFactory::class))->setPublic(true));
+        $container->setAlias(AmqpTypeFactoryInterface::class, AmqpTypeFactory::class)->setPublic(true);
+        $container->setAlias('sigbits_amqp.amqp_type_factory', AmqpTypeFactory::class)->setPublic(true);
+
+        $container->setDefinition(TerminusFactory::class, (new Definition(TerminusFactory::class))->setPublic(true));
+        $container->setAlias(TerminusFactoryInterface::class, TerminusFactory::class)->setPublic(true);
+        $container->setAlias('sigbits_amqp.terminus_factory', TerminusFactory::class)->setPublic(true);
+
+        $container->setDefinition(SettlementHelper::class, (new Definition(SettlementHelper::class))->setPublic(true));
+        $container->setAlias(SettlementHelperInterface::class, SettlementHelper::class)->setPublic(true);
+        $container->setAlias('sigbits_amqp.settlement_helper', SettlementHelper::class)->setPublic(true);
     }
 
     /**
@@ -81,12 +186,7 @@ final class SigbitsAmqpExtension extends Extension
         string $name,
         array $connectionConfig,
     ): void {
-        if (!preg_match('/^[A-Za-z0-9_.-]+$/', $name)) {
-            throw new InvalidConfigurationException(sprintf(
-                'The sigbits_amqp connection name "%s" is invalid. Use only letters, numbers, underscores, dots, and hyphens.',
-                $name,
-            ));
-        }
+        $this->assertServiceName($name, 'connection');
 
         $definition = new Definition(ConnectionFactory::class);
         $definition->setArguments([
@@ -120,5 +220,45 @@ final class SigbitsAmqpExtension extends Extension
     private function connectionHealthCheckerServiceId(string $name): string
     {
         return sprintf('sigbits_amqp.connection_health_checker.%s', $name);
+    }
+
+    private function senderEndpointServiceId(string $name): string
+    {
+        return sprintf('sigbits_amqp.sender_endpoint.%s', $name);
+    }
+
+    private function receiverEndpointServiceId(string $name): string
+    {
+        return sprintf('sigbits_amqp.receiver_endpoint.%s', $name);
+    }
+
+    private function assertServiceName(string $name, string $kind): void
+    {
+        if (!preg_match('/^[A-Za-z0-9_.-]+$/', $name)) {
+            throw new InvalidConfigurationException(sprintf(
+                'The sigbits_amqp %s name "%s" is invalid. Use only letters, numbers, underscores, dots, and hyphens.',
+                $kind,
+                $name,
+            ));
+        }
+    }
+
+    /**
+     * @param array<string, mixed> $connections
+     */
+    private function assertConfiguredConnection(
+        string $connection,
+        array $connections,
+        string $kind,
+        string $name,
+    ): void {
+        if (!isset($connections[$connection])) {
+            throw new InvalidConfigurationException(sprintf(
+                'The sigbits_amqp %s "%s" references unknown connection "%s".',
+                $kind,
+                $name,
+                $connection,
+            ));
+        }
     }
 }

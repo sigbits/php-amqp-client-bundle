@@ -8,7 +8,7 @@ no network connection is opened while Symfony builds the container.
 
 - PHP: `^8.3`
 - Symfony components: `^6.4 || ^7.4 || ^8.1`
-- AMQP client: `sigbits/php-amqp-client` `^1.0`
+- AMQP client: `sigbits/php-amqp-client` `^1.3`
 
 Symfony 8.1 requires PHP 8.4.1 or newer. The package PHP floor remains 8.3
 because Symfony 6.4 and 7.4 still run on PHP 8.3.
@@ -77,6 +77,21 @@ sigbits_amqp:
         username: ''
         password: ''
         authorization_id: ''
+  senders:
+    orders:
+      connection: default
+      address: '/queues/orders'
+      link_name: sender
+      handle: 0
+      max_frame_size: 512
+  receivers:
+    orders:
+      connection: default
+      address: '/queues/orders'
+      link_name: receiver
+      handle: 1
+      credit: 1
+      receive_timeout: 1000
 ```
 
 ### Root Options
@@ -85,6 +100,8 @@ sigbits_amqp:
 | --- | --- | --- | --- |
 | `default_connection` | string | `default` | Connection name used for `ConnectionFactoryInterface` and `sigbits_amqp.connection_factory`. |
 | `connections` | map | required | Named connection definitions keyed by connection name. |
+| `senders` | map | `{}` | Named sender endpoint definitions keyed by endpoint name. |
+| `receivers` | map | `{}` | Named receiver endpoint definitions keyed by endpoint name. |
 
 Connection names may contain letters, numbers, underscores, dots, and hyphens.
 They are used in service IDs, so keep them stable.
@@ -146,6 +163,100 @@ sigbits_amqp:
 Use `auto` when the URI or broker setup should decide the SASL behavior. Use
 `anonymous` for anonymous authentication. Use `plain` when the broker requires a
 username and password outside the URI.
+
+## Endpoint Services
+
+Endpoint services wrap common session/link opening defaults around the existing
+connection factories. They are still lazy: defining or fetching an endpoint
+service does not open a network connection. Calling `open()` on the endpoint
+opens a connection, begins a session, and opens the sender or receiver link.
+
+```yaml
+sigbits_amqp:
+  connections:
+    default:
+      uri: '%env(AMQP_URL)%'
+  senders:
+    orders:
+      connection: default
+      address: '/queues/orders'
+      link_name: 'orders-sender'
+      handle: 0
+      max_frame_size: 4096
+  receivers:
+    orders:
+      connection: default
+      address: '/queues/orders'
+      link_name: 'orders-receiver'
+      handle: 1
+      credit: 25
+      receive_timeout: 1500
+```
+
+Sender endpoint service IDs use this pattern:
+
+```text
+sigbits_amqp.sender_endpoint.<name>
+```
+
+Receiver endpoint service IDs use this pattern:
+
+```text
+sigbits_amqp.receiver_endpoint.<name>
+```
+
+### Sender Endpoint Options
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `connection` | string | `default` | Connection name used by the endpoint. |
+| `address` | string | required | Target address passed to `Session::openSender()`. |
+| `link_name` | string | `sender` | AMQP link name passed to the client. |
+| `handle` | int | `0` | Link handle. Must be greater than or equal to `0`. |
+| `max_frame_size` | int | `512` | Default max frame size for sends through the opened endpoint. |
+
+### Receiver Endpoint Options
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `connection` | string | `default` | Connection name used by the endpoint. |
+| `address` | string | required | Source address passed to `Session::openReceiver()`. |
+| `link_name` | string | `receiver` | AMQP link name passed to the client. |
+| `handle` | int | `1` | Link handle. Must be greater than or equal to `0`. |
+| `credit` | int | `1` | Initial receiver credit. Must be greater than or equal to `0`. |
+| `receive_timeout` | int | `1000` | Default receive timeout in milliseconds. |
+
+Use endpoint objects with explicit lifecycle handling:
+
+```php
+<?php
+
+use Sigbits\AmqpBundle\Endpoint\SenderEndpointInterface;
+use Sigbits\AmqpBundle\Message\MessageFactoryInterface;
+
+final readonly class PublishOrder
+{
+    public function __construct(
+        private SenderEndpointInterface $senderEndpoint,
+        private MessageFactoryInterface $messageFactory,
+    ) {
+    }
+
+    public function __invoke(string $payload): void
+    {
+        $sender = $this->senderEndpoint->open();
+
+        try {
+            $sender->send($this->messageFactory->message(
+                body: $payload,
+                applicationProperties: ['source' => 'checkout'],
+            ));
+        } finally {
+            $sender->close();
+        }
+    }
+}
+```
 
 ## Multiple Connections
 
@@ -236,7 +347,10 @@ failures include:
 | Connection name contains unsupported characters | `connection name` and the invalid name |
 | `timeout` is `0` or negative | `The timeout must be greater than 0.` |
 | `sasl.mechanism` is `plain` without a username | `sasl.username` |
+| Sender or receiver endpoint references a missing connection | `unknown connection` |
+| Sender or receiver endpoint handle is negative | `handle` |
 
-Messenger transport configuration is intentionally not part of this bundle
-version. Future Messenger integration should reuse these connection factories
-instead of introducing a second connection model.
+Messenger transport configuration is intentionally optional and is not required
+by these endpoint services. Future Messenger integration should reuse these
+connection and endpoint services instead of introducing a second connection
+model.

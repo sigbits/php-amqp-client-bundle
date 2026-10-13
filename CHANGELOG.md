@@ -4,6 +4,19 @@ All notable changes to `sigbits/php-amqp-client-bundle` are documented here.
 
 The project uses SemVer-style tags with a `v` prefix.
 
+## v0.6.0
+
+Client 1.3 convenience services.
+
+- Raised the `sigbits/php-amqp-client` support baseline to `^1.3`.
+- Updated the development branch alias to `0.6-dev`.
+- Documented the planned `0.6.0` scope for client 1.3 convenience services.
+- Recorded that Messenger integration remains optional and outside the core
+  runtime dependency set.
+- Added named sender and receiver endpoint services.
+- Added message, AMQP type, terminus, and settlement helper services for the
+  client 1.3 public value objects.
+
 ## v0.5.1
 
 Documentation patch.
