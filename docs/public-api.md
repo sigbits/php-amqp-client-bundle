@@ -163,7 +163,37 @@ opens the AMQP link. `connect()` is an alias for `open()`. Applications are
 responsible for calling `close()` on the returned open endpoint object when the
 unit of work is finished.
 
-## Client 1.3 Helper Services
+Open receiver endpoints expose:
+
+```php
+<?php
+
+namespace Sigbits\AmqpBundle\Endpoint;
+
+use Sigbits\Amqp\Client\Delivery;
+use Sigbits\Amqp\Protocol\Message\Message;
+
+final readonly class OpenReceiverEndpoint
+{
+    public function receive(?int $timeoutMilliseconds = null): ?Message;
+
+    public function receiveDelivery(?int $timeoutMilliseconds = null): ?Delivery;
+
+    /**
+     * @return iterable<Delivery>
+     */
+    public function deliveries(?int $timeoutMilliseconds = null): iterable;
+
+    public function grantCredit(int $credit): void;
+
+    public function close(): void;
+}
+```
+
+`deliveries()` yields until the configured receive timeout, or the timeout
+passed to the method, returns no delivery.
+
+## Client 1.4 Helper Services
 
 The default AMQP message factory is available as:
 
@@ -185,6 +215,9 @@ The AMQP terminus and delivery-state value factory is available as:
 Sigbits\AmqpBundle\Protocol\TerminusFactoryInterface
 sigbits_amqp.terminus_factory
 ```
+
+`TerminusFactoryInterface` includes delivery-state factories for accepted,
+released, rejected, and modified outcomes.
 
 The settlement helper is available as:
 

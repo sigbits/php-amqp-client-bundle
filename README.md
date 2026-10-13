@@ -26,7 +26,7 @@ Future Messenger integration is expected to remain optional.
 Install the bundle with Composer:
 
 ```sh
-composer require sigbits/php-amqp-client-bundle:^0.5
+composer require sigbits/php-amqp-client-bundle:^0.7
 ```
 
 If Symfony Flex does not register the bundle automatically, add it manually:

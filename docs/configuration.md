@@ -8,7 +8,7 @@ no network connection is opened while Symfony builds the container.
 
 - PHP: `^8.3`
 - Symfony components: `^6.4 || ^7.4 || ^8.1`
-- AMQP client: `sigbits/php-amqp-client` `^1.3`
+- AMQP client: `sigbits/php-amqp-client` `^1.4`
 
 Symfony 8.1 requires PHP 8.4.1 or newer. The package PHP floor remains 8.3
 because Symfony 6.4 and 7.4 still run on PHP 8.3.
@@ -168,8 +168,9 @@ username and password outside the URI.
 
 Endpoint services wrap common session/link opening defaults around the existing
 connection factories. They are still lazy: defining or fetching an endpoint
-service does not open a network connection. Calling `open()` on the endpoint
-opens a connection, begins a session, and opens the sender or receiver link.
+service does not open a network connection. Calling `open()` or `connect()` on
+the endpoint opens a connection, begins a session, and opens the sender or
+receiver link.
 
 ```yaml
 sigbits_amqp:
@@ -257,6 +258,40 @@ final readonly class PublishOrder
     }
 }
 ```
+
+Receiver endpoints also expose a delivery iterator:
+
+```php
+<?php
+
+use Sigbits\AmqpBundle\Endpoint\ReceiverEndpointInterface;
+
+final readonly class DrainOrders
+{
+    public function __construct(
+        private ReceiverEndpointInterface $receiverEndpoint,
+    ) {
+    }
+
+    public function __invoke(): void
+    {
+        $receiver = $this->receiverEndpoint->connect();
+
+        try {
+            foreach ($receiver->deliveries() as $delivery) {
+                process($delivery->message());
+                $delivery->accept();
+            }
+        } finally {
+            $receiver->close();
+        }
+    }
+}
+```
+
+`deliveries()` yields `Delivery` objects until the configured receive timeout,
+or the timeout passed to `deliveries($timeoutMilliseconds)`, returns no
+delivery.
 
 ## Multiple Connections
 

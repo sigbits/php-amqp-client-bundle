@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a71373298cda6d4e05fb3a7b22fb493b",
+    "content-hash": "505a0cc7b455caa60021f07880573ea8",
     "packages": [
         {
             "name": "psr/container",
@@ -161,16 +161,16 @@
         },
         {
             "name": "sigbits/php-amqp-client",
-            "version": "v1.3.0",
+            "version": "v1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sigbits/php-amqp-client.git",
-                "reference": "6bd2194928d58c8c93fb4e12c4d3fad281ec9d64"
+                "reference": "9a8eb19f8e107b29d8eac78216a5adb349f2d760"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sigbits/php-amqp-client/zipball/6bd2194928d58c8c93fb4e12c4d3fad281ec9d64",
-                "reference": "6bd2194928d58c8c93fb4e12c4d3fad281ec9d64",
+                "url": "https://api.github.com/repos/sigbits/php-amqp-client/zipball/9a8eb19f8e107b29d8eac78216a5adb349f2d760",
+                "reference": "9a8eb19f8e107b29d8eac78216a5adb349f2d760",
                 "shasum": ""
             },
             "require": {
@@ -208,7 +208,7 @@
                 "issues": "https://github.com/sigbits/php-amqp-client/issues",
                 "source": "https://github.com/sigbits/php-amqp-client"
             },
-            "time": "2026-10-13T08:23:54+00:00"
+            "time": "2026-10-13T12:53:35+00:00"
         },
         {
             "name": "symfony/config",

@@ -6,6 +6,7 @@ namespace Sigbits\AmqpBundle\Protocol;
 
 use Sigbits\Amqp\Protocol\Performative\Accepted;
 use Sigbits\Amqp\Protocol\Performative\DeliveryState;
+use Sigbits\Amqp\Protocol\Performative\Modified;
 use Sigbits\Amqp\Protocol\Performative\Rejected;
 use Sigbits\Amqp\Protocol\Performative\Released;
 use Sigbits\Amqp\Protocol\Performative\Source;
@@ -75,5 +76,17 @@ final readonly class TerminusFactory implements TerminusFactoryInterface
     public function rejected(): Rejected
     {
         return new Rejected();
+    }
+
+    public function modified(
+        ?bool $deliveryFailed = null,
+        ?bool $undeliverableHere = null,
+        ?AmqpMap $messageAnnotations = null,
+    ): Modified {
+        return new Modified(
+            deliveryFailed: $deliveryFailed,
+            undeliverableHere: $undeliverableHere,
+            messageAnnotations: $messageAnnotations,
+        );
     }
 }

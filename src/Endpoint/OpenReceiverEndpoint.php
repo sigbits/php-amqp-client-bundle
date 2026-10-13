@@ -30,6 +30,14 @@ final readonly class OpenReceiverEndpoint
         return $this->receiver->receiveDelivery($timeoutMilliseconds ?? $this->receiveTimeoutMilliseconds);
     }
 
+    /**
+     * @return iterable<Delivery>
+     */
+    public function deliveries(?int $timeoutMilliseconds = null): iterable
+    {
+        return $this->receiver->deliveries($timeoutMilliseconds ?? $this->receiveTimeoutMilliseconds);
+    }
+
     public function grantCredit(int $credit): void
     {
         $this->receiver->grantCredit($credit);

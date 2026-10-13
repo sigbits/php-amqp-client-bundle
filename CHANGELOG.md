@@ -4,6 +4,15 @@ All notable changes to `sigbits/php-amqp-client-bundle` are documented here.
 
 The project uses SemVer-style tags with a `v` prefix.
 
+## v0.7.0
+
+Client 1.4 convenience services.
+
+- Raised the `sigbits/php-amqp-client` support baseline to `^1.4`.
+- Updated the development branch alias to `0.7-dev`.
+- Added receiver endpoint delivery iteration through `OpenReceiverEndpoint::deliveries()`.
+- Added `Modified` delivery-state value creation through `TerminusFactoryInterface::modified()`.
+
 ## v0.6.0
 
 Client 1.3 convenience services.

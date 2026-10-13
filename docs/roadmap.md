@@ -11,7 +11,7 @@ the PHP requirements of `sigbits/php-amqp-client`.
 
 - PHP: `^8.3`
 - Symfony: `^6.4 || ^7.4 || ^8.1`
-- AMQP client: `sigbits/php-amqp-client` `^1.3`
+- AMQP client: `sigbits/php-amqp-client` `^1.4`
 
 Symfony 8.1 requires PHP 8.4.1 or newer, so its CI jobs run on PHP 8.4+ even
 though the package-level PHP floor remains 8.3.
@@ -125,7 +125,7 @@ Exit criteria:
 
 ## 0.6.0 Client 1.3 Convenience Services
 
-Status: planned.
+Status: complete. Tagged as `v0.6.0`.
 
 Goal: support `sigbits/php-amqp-client` 1.3 as the bundle baseline and add
 Symfony-native convenience services for reusable AMQP endpoints without making
@@ -149,6 +149,33 @@ Exit criteria:
 - Documentation covers the new endpoint services and confirms Messenger remains
   optional.
 - Public API documentation identifies the new supported service contracts.
+
+## 0.7.0 Client 1.4 Convenience Services
+
+Status: planned.
+
+Goal: support `sigbits/php-amqp-client` 1.4 as the bundle baseline and expose
+the new receiver iteration and modified delivery-state value object through the
+existing endpoint and factory services.
+
+- Require `sigbits/php-amqp-client` `^1.4`.
+- Add `OpenReceiverEndpoint::deliveries()` as a configured-timeout wrapper
+  around `Receiver::deliveries()`.
+- Add `TerminusFactoryInterface::modified()` for the client 1.4 modified
+  delivery-state value object.
+- Keep settlement helper behavior limited to the public `Delivery` operations
+  exposed by the client.
+- Keep Messenger integration optional and outside the core runtime dependency
+  set.
+
+Exit criteria:
+
+- `composer validate --strict --no-check-lock` succeeds with the `^1.4` client
+  constraint.
+- `composer ci` succeeds against `sigbits/php-amqp-client` `v1.4.0`.
+- Documentation covers receiver delivery iteration and modified delivery-state
+  creation.
+- Public API documentation identifies the new supported methods.
 
 ## Later: Optional Messenger Integration
 
