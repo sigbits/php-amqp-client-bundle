@@ -9,9 +9,9 @@ container before it grows optional integrations.
 The bundle supports the currently maintained Symfony branches that can run with
 the PHP requirements of `sigbits/php-amqp-client`.
 
-- PHP: `>=8.3.36 <8.4 || >=8.4.27 <8.5 || >=8.5.12 <9.0`
+- PHP: `>=8.3.36 <8.4 || >=8.4.27 <8.5 || >=8.5.12 <8.6`
 - Symfony: `^6.4 || ^7.4 || ^8.1`
-- AMQP client: `sigbits/php-amqp-client` `^1.4`
+- AMQP client: `sigbits/php-amqp-client` `^1.4.1`
 
 The supported PHP patch floors are 8.3.36, 8.4.27, and 8.5.12. Symfony 8.1
 requires PHP 8.4.1 or newer, so its CI jobs run on PHP 8.4.27+ and 8.5.12+.
@@ -158,7 +158,7 @@ Goal: support `sigbits/php-amqp-client` 1.4 as the bundle baseline and expose
 the new receiver iteration and modified delivery-state value object through the
 existing endpoint and factory services.
 
-- Require `sigbits/php-amqp-client` `^1.4`.
+- Require `sigbits/php-amqp-client` `^1.4.1`.
 - Add `OpenReceiverEndpoint::deliveries()` as a configured-timeout wrapper
   around `Receiver::deliveries()`.
 - Add `TerminusFactoryInterface::modified()` for the client 1.4 modified
@@ -170,9 +170,9 @@ existing endpoint and factory services.
 
 Exit criteria:
 
-- `composer validate --strict --no-check-lock` succeeds with the `^1.4` client
+- `composer validate --strict --no-check-lock` succeeds with the `^1.4.1` client
   constraint.
-- `composer ci` succeeds against `sigbits/php-amqp-client` `v1.4.0`.
+- `composer ci` succeeds against `sigbits/php-amqp-client` `v1.4.1`.
 - Documentation covers receiver delivery iteration and modified delivery-state
   creation.
 - Public API documentation identifies the new supported methods.

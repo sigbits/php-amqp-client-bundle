@@ -22,8 +22,8 @@
         }
     },
     "require": {
-        "php": ">=8.3.36 <8.4 || >=8.4.27 <8.5 || >=8.5.12 <9.0",
-        "sigbits/php-amqp-client": "^1.4",
+        "php": ">=8.3.36 <8.4 || >=8.4.27 <8.5 || >=8.5.12 <8.6",
+        "sigbits/php-amqp-client": "^1.4.1",
         "symfony/config": "^6.4 || ^7.4 || ^8.1",
         "symfony/dependency-injection": "^6.4 || ^7.4 || ^8.1",
         "symfony/http-kernel": "^6.4 || ^7.4 || ^8.1"

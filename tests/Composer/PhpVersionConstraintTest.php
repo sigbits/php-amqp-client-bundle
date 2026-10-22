@@ -18,6 +18,7 @@ final class PhpVersionConstraintTest extends TestCase
         self::assertFalse(Semver::satisfies('8.5.11', $constraint));
         self::assertFalse(Semver::satisfies('8.4.0', $constraint));
         self::assertFalse(Semver::satisfies('8.5.0', $constraint));
+        self::assertFalse(Semver::satisfies('8.6.0', $constraint));
     }
 
     public function testAllowsPhp2shellFixedPatchFloors(): void
@@ -29,7 +30,20 @@ final class PhpVersionConstraintTest extends TestCase
         self::assertTrue(Semver::satisfies('8.5.12', $constraint));
     }
 
+    public function testRequiresPhpAmqpClientWithPhp2shellFix(): void
+    {
+        $constraint = $this->packageConstraint('sigbits/php-amqp-client');
+
+        self::assertFalse(Semver::satisfies('1.4.0', $constraint));
+        self::assertTrue(Semver::satisfies('1.4.1', $constraint));
+    }
+
     private function phpConstraint(): string
+    {
+        return $this->packageConstraint('php');
+    }
+
+    private function packageConstraint(string $package): string
     {
         $composerJson = json_decode(
             (string) file_get_contents(dirname(__DIR__, 2) . '/composer.json'),
@@ -37,6 +51,6 @@ final class PhpVersionConstraintTest extends TestCase
             flags: JSON_THROW_ON_ERROR,
         );
 
-        return $composerJson['require']['php'];
+        return $composerJson['require'][$package];
     }
 }

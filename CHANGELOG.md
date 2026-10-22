@@ -4,6 +4,12 @@ All notable changes to `sigbits/php-amqp-client-bundle` are documented here.
 
 The project uses SemVer-style tags with a `v` prefix.
 
+## Unreleased
+
+Security dependency floor.
+
+- Raised the `sigbits/php-amqp-client` support baseline to `^1.4.1`.
+
 ## v0.7.0
 
 Client 1.4 convenience services.
