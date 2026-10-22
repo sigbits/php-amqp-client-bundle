@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "505a0cc7b455caa60021f07880573ea8",
+    "content-hash": "dc5eb8ed1aed776e531f3d65a012d0dd",
     "packages": [
         {
             "name": "psr/container",
@@ -161,20 +161,20 @@
         },
         {
             "name": "sigbits/php-amqp-client",
-            "version": "v1.4.0",
+            "version": "v1.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sigbits/php-amqp-client.git",
-                "reference": "9a8eb19f8e107b29d8eac78216a5adb349f2d760"
+                "reference": "d802e93ce82479361605f992280e9ef0abe23eda"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sigbits/php-amqp-client/zipball/9a8eb19f8e107b29d8eac78216a5adb349f2d760",
-                "reference": "9a8eb19f8e107b29d8eac78216a5adb349f2d760",
+                "url": "https://api.github.com/repos/sigbits/php-amqp-client/zipball/d802e93ce82479361605f992280e9ef0abe23eda",
+                "reference": "d802e93ce82479361605f992280e9ef0abe23eda",
                 "shasum": ""
             },
             "require": {
-                "php": "^8.3"
+                "php": ">=8.3.36 <8.4 || >=8.4.27 <8.5 || >=8.5.12 <8.6"
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.64",
@@ -208,7 +208,7 @@
                 "issues": "https://github.com/sigbits/php-amqp-client/issues",
                 "source": "https://github.com/sigbits/php-amqp-client"
             },
-            "time": "2026-10-13T12:53:35+00:00"
+            "time": "2026-10-22T09:14:53+00:00"
         },
         {
             "name": "symfony/config",
@@ -5263,11 +5263,11 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.3"
+        "php": ">=8.3.36 <8.4 || >=8.4.27 <8.5 || >=8.5.12 <8.6"
     },
     "platform-dev": {},
     "platform-overrides": {
-        "php": "8.3.0"
+        "php": "8.3.36"
     },
     "plugin-api-version": "2.9.0"
 }

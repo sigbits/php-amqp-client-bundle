@@ -134,6 +134,6 @@ make ci
 Use `PHP_VERSION` to run against a specific supported PHP version:
 
 ```sh
-PHP_VERSION=8.4 make ci
-PHP_VERSION=8.5 make ci
+PHP_VERSION=8.4.27 make ci
+PHP_VERSION=8.5.12 make ci
 ```
