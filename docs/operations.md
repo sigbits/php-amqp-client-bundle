@@ -142,12 +142,13 @@ PHP requirement of `sigbits/php-amqp-client`.
 
 Current support:
 
-- PHP: `^8.3`
+- PHP: `>=8.3.36 <8.4 || >=8.4.27 <8.5 || >=8.5.12 <9.0`
 - Symfony: `^6.4 || ^7.4 || ^8.1`
 - AMQP client: `sigbits/php-amqp-client` `^1.4`
 
-Symfony 8.1 requires PHP 8.4.1 or newer, so Symfony 8.1 CI jobs run on PHP
-8.4+ even though the package-level PHP floor remains 8.3.
+The supported PHP patch floors are 8.3.36, 8.4.27, and 8.5.12. Symfony 8.1
+requires PHP 8.4.1 or newer, so Symfony 8.1 CI jobs run on PHP 8.4.27+ and
+8.5.12+.
 
 Compatibility changes should be reflected in `composer.json`, CI, and this
 document in the same pull request.

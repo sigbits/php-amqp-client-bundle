@@ -9,12 +9,12 @@ container before it grows optional integrations.
 The bundle supports the currently maintained Symfony branches that can run with
 the PHP requirements of `sigbits/php-amqp-client`.
 
-- PHP: `^8.3`
+- PHP: `>=8.3.36 <8.4 || >=8.4.27 <8.5 || >=8.5.12 <9.0`
 - Symfony: `^6.4 || ^7.4 || ^8.1`
 - AMQP client: `sigbits/php-amqp-client` `^1.4`
 
-Symfony 8.1 requires PHP 8.4.1 or newer, so its CI jobs run on PHP 8.4+ even
-though the package-level PHP floor remains 8.3.
+The supported PHP patch floors are 8.3.36, 8.4.27, and 8.5.12. Symfony 8.1
+requires PHP 8.4.1 or newer, so its CI jobs run on PHP 8.4.27+ and 8.5.12+.
 
 ## 0.1.0 Package Foundation
 
@@ -26,7 +26,7 @@ baseline as `sigbits/php-amqp-client`.
 - Composer package metadata for `sigbits/php-amqp-client-bundle`.
 - MIT license with the yearless Sigbits copyright notice.
 - Symfony bundle type and Flex-friendly package metadata.
-- PHP 8.3+ and maintained Symfony component constraints.
+- Branch-specific PHP patch floors and maintained Symfony component constraints.
 - PSR-4 autoloading for `Sigbits\AmqpBundle`.
 - Minimal bundle class.
 - PHPUnit, PHPStan, and PHP CS Fixer configuration.
